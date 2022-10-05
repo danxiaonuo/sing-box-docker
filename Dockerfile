@@ -45,19 +45,18 @@ RUN set -eux && \
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
-   go build -v -tags \
-   with_quic,\
-   with_grpc,\
-   with_wireguard,\
-   with_shadowsocksr,\
-   with_ech,with_utls,\
-   with_acme,\
-   with_clash_api,\
-   with_gvisor,\
-   with_embedded_tor,\
-   with_lwip \
-   github.com/sagernet/sing-box/cmd/sing-box@$SINGBOX_VERSION
-   
+   # 克隆源码运行安装
+   git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
+   cd /src && export COMMIT=$(git rev-parse --short HEAD) && \
+   go env -w GO111MODULE=on && \
+   go env -w CGO_ENABLED=0 && \
+   go env && \
+   go mod tidy && \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_gvisor,with_embedded_tor,with_lwip' \
+        -o /go/bin/sing-box \
+        -ldflags "-X github.com/sagernet/sing-box/constant.Commit=${COMMIT} -w -s -buildid=" \
+        ./cmd/sing-box
+
 ##########################################
 #         构建基础镜像                    #
 ##########################################
@@ -112,7 +111,7 @@ RUN set -eux && \
    /bin/zsh
    
 # 拷贝sing-box
-COPY --from=builder /root/go/bin/sing-box /usr/bin/sing-box
+COPY --from=builder /go/bin/sing-box /usr/bin/sing-box
 
 # 环境变量
 ENV PATH /usr/bin/sing-box:$PATH

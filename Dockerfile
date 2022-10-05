@@ -29,6 +29,7 @@ ARG PKG_DEPS="\
       git \
       build-base \
       openssl-dev \
+      libevent-dev \
       tzdata \
       ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS

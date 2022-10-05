@@ -28,7 +28,10 @@ ENV SINGBOX_VERSION=$SINGBOX_VERSION
 ARG PKG_DEPS="\
       git \
       build-base \
+      zlib-dev \
+      openssl \
       openssl-dev \
+      tor \
       libevent-dev \
       tzdata \
       ca-certificates"

@@ -27,6 +27,7 @@ ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
 ARG PKG_DEPS="\
       git \
+      linux-headers-$(uname -r) \
       build-base \
       zlib-dev \
       openssl \

@@ -46,7 +46,6 @@ RUN set -eux && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
    go build -v -tags \
-   -o /go/bin/sing-box \
    with_quic,\
    with_grpc,\
    with_wireguard,\
@@ -113,7 +112,7 @@ RUN set -eux && \
    /bin/zsh
    
 # 拷贝sing-box
-COPY --from=builder /go/bin/sing-box /usr/bin/sing-box
+COPY --from=builder /root/go/bin/sing-box /usr/bin/sing-box
 
 # 环境变量
 ENV PATH /usr/bin/sing-box:$PATH

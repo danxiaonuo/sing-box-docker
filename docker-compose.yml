@@ -1,0 +1,142 @@
+version: '3.9'
+services:
+  
+  # 服务名
+  singbox:
+    # 模拟一个伪终端
+    tty: true
+    # 打开标准输入,可以接受外部输入
+    stdin_open: true
+    # 主机名
+    hostname: singbox
+    # 指定容器名称
+    container_name: singbox
+    # 指定为镜像名称或镜像ID
+    image: danxiaonuo/sing-box:latest
+    # 覆盖容器启动后默认执行的命令
+    # command: /sbin/init
+    # 允许容器中运行一些特权命令
+    privileged: true
+    # 指定容器退出后的重启策略为始终重启
+    restart: always
+    # 指定容器的内核能力(capacity)分配
+    cap_add:
+     - ALL
+    # 配置容器内核参数
+    sysctls:
+      - net.ipv4.tcp_ecn=1
+      - net.ipv4.tcp_ecn_fallback=1
+      - net.ipv4.tcp_congestion_control=bbrplus
+    # 数据卷所挂载路径设置
+    volumes:
+      # sing-box配置目录
+      #- ./conf/sing-box/vmess.json:/etc/sing-box/vmess.json:rw,cached
+      #- ./conf/sing-box/trojan.json:/etc/sing-box/trojan.json:rw,cached
+      # 同步宿主机时区与时间
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro,cached
+      - /etc/localtime:/etc/localtime:ro,cached
+      # 共享内核
+      - /lib/modules:/lib/modules:ro,cached
+      - /etc/sysctl.conf:/etc/sysctl.conf:ro,cached
+    # 指定设备映射关系
+    devices:
+     - /dev/net/tun
+    # 解决容器的依赖
+    #depends_on:
+    #  - ""
+    # 配置容器连接的网络
+    networks:
+      app_net:
+        ipv4_address: 172.186.0.2
+        ipv6_address: 2066::2
+    # 暴露端口信息
+    expose:
+     - "6601/tcp"
+     - "6602/tcp"
+    # 指定容器的 ulimits 限制值
+    ulimits:
+      nproc: 65535
+      nofile:
+          soft: 65535
+          hard: 65535
+
+  # 服务名
+  nginx:
+    # 模拟一个伪终端
+    tty: true
+    # 打开标准输入,可以接受外部输入
+    stdin_open: true
+    # 主机名
+    hostname: nginx
+    # 指定容器名称
+    container_name: nginx
+    # 指定为镜像名称或镜像ID
+    image: danxiaonuo/nginx:latest
+    # 覆盖容器启动后默认执行的命令
+    # command: /sbin/init
+    # 允许容器中运行一些特权命令
+    privileged: true
+    # 指定容器退出后的重启策略为始终重启
+    restart: always
+    # 指定容器的内核能力(capacity)分配
+    cap_add:
+     - ALL
+    # 配置容器内核参数
+    sysctls:
+      - net.ipv4.tcp_ecn=1
+      - net.ipv4.tcp_ecn_fallback=1
+      - net.ipv4.tcp_congestion_control=bbrplus
+    # 数据卷所挂载路径设置
+    volumes:
+      # 配置目录与文件
+      - ./conf/nginx/vhost:/data/nginx/conf/vhost:rw,cached
+      # 日志目录
+      - ./logs/nginx:/data/nginx/logs:delegated
+      # 同步宿主机时区与时间
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro,cached
+      - /etc/localtime:/etc/localtime:ro,cached
+      # 共享内核
+      - /lib/modules:/lib/modules:ro,cached
+      - /etc/sysctl.conf:/etc/sysctl.conf:ro,cached
+    # 指定设备映射关系
+    devices:
+     - /dev/net/tun
+    # 解决容器的依赖
+    depends_on:
+      - "singbox"
+    # 配置容器连接的网络
+    networks:
+      app_net:
+        ipv4_address: 172.186.0.3
+        ipv6_address: 2066::3
+    # 暴露端口信息
+    ports:
+    - "80:80"
+    - "443:443"
+    # 指定容器的 ulimits 限制值
+    ulimits:
+      nproc: 65535
+      nofile:
+          soft: 65535
+          hard: 65535
+ 
+ 
+networks:
+  app_net:
+    driver: bridge
+    enable_ipv6: true
+    driver_opts:
+      com.docker.network.bridge.name: app_net
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_forwarding: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.host_binding_ipv6: "::/0"
+      com.docker.network.driver.mtu: 1500
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.186.0.0/24
+        gateway: 172.186.0.1
+      - subnet: 2066::/64
+        gateway: 2066::1

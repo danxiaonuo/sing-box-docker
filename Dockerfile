@@ -82,6 +82,13 @@ ENV LANG=$LANG
 ARG PKG_DEPS="\
       zsh \
       bash \
+      linux-headers \
+      build-base \
+      zlib-dev \
+      openssl \
+      openssl-dev \
+      tor \
+      libevent-dev \
       bind-tools \
       iproute2 \
       ipset \

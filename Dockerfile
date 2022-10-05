@@ -45,7 +45,7 @@ RUN set -eux && \
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
-   go build -v -trimpath -tags \
+   go build -v -tags \
    -o /go/bin/sing-box \
    with_quic,\
    with_grpc,\

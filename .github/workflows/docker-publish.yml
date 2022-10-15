@@ -17,11 +17,6 @@ on:
       - 'Dockerfile'
   # 手动触发工作流
   workflow_dispatch:
-    inputs:
-      build:
-        description: 'build sing-box'
-        required: true
-        default: 'build sing-box'
   # 定时触发编译(每天早5点)
   schedule:
      - cron: '0 21 * * *'

@@ -82,6 +82,8 @@ ENV LANG=$LANG
 ARG PKG_DEPS="\
       zsh \
       bash \
+      bash-doc \
+      bash-completion \
       linux-headers \
       build-base \
       zlib-dev \

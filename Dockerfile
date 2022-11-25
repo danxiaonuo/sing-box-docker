@@ -2,8 +2,7 @@
 #         构建可执行二进制文件             #
 ##########################################
 # 指定构建的基础镜像
-# FROM golang:alpine AS builder
-FROM alpine:latest AS builder
+FROM golang:alpine AS builder
 
 # 作者描述信息
 MAINTAINER danxiaonuo
@@ -21,13 +20,8 @@ ARG GOPROXY=""
 ENV GOPROXY ${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
-ARG CGO_ENABLED=0
+ARG CGO_ENABLED=1
 ENV CGO_ENABLED=$CGO_ENABLED
-ARG GOROOT=/usr/local/go
-ENV GOROOT=$GOROOT
-ARG GOPATH=/go
-ENV GOPATH=$GOPATH
-ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # 源文件下载路径
 ARG DOWNLOAD_SRC=/tmp/src
@@ -37,12 +31,10 @@ ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 ARG SINGBOX_VERSION=1.1-beta17
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
-ARG BUILD_DEPS="go"
-ENV BUILD_DEPS=$BUILD_DEPS
-
 ARG PKG_DEPS="\
       bash \
       gcc \
+      go \
       musl-dev \
       git \
       linux-headers \
@@ -63,28 +55,17 @@ RUN set -eux && \
    # 更新源地址并更新系统软件
    apk update && apk upgrade && \
    # 安装依赖包
-   apk add --no-cache --clean-protected $BUILD_DEPS && \
    apk add --no-cache --clean-protected $PKG_DEPS && \
    rm -rf /var/cache/apk/* && \
    # 更新时区
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
-   # 安装GO环境
-   mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
-   wget --no-check-certificate https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz \
-    -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.src.tar.gz && \
-   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.src.tar.gz -C /usr/local && \
-   export GOCACHE='/tmp/gocache' && cd ${GOROOT}/src && \
-   export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
-   export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
-   apk del --no-network $BUILD_DEPS && \
-   chmod -R 775 ${GOROOT} && ln -sf ${GOROOT}/bin/* /usr/bin/ && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \
    go env -w GO111MODULE=on && \
-   go env -w CGO_ENABLED=0 && \
+   go env -w CGO_ENABLED=1 && \
    go env && \
    go mod tidy && \
    go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_gvisor,with_embedded_tor,with_lwip' \
@@ -97,7 +78,7 @@ RUN set -eux && \
 ##########################################
 # 
 # 指定创建的基础镜像
-FROM alpine:latest
+FROM golang:alpine
 
 # 作者描述信息
 MAINTAINER danxiaonuo

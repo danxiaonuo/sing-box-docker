@@ -70,6 +70,7 @@ RUN set -eux && \
     -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.linux-amd64.tar.gz -C /usr/local && \
+   ln -sf ${GOROOT}/bin/* /usr/bin/ && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

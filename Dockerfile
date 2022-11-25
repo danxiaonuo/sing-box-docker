@@ -138,19 +138,16 @@ RUN set -eux && \
 # 拷贝sing-box
 COPY --from=builder /go/bin/sing-box /usr/bin/sing-box
 
-# 环境变量
-ENV PATH /usr/bin/sing-box:$PATH
- 
-# 授予文件权限
-RUN set -eux && \
-    mkdir -p /etc/sing-box && \
-    chmod +x /usr/bin/sing-box
-    
 # 拷贝文件
 COPY ["./docker-entrypoint.sh", "/usr/bin/"]
 COPY ["./conf/sing-box", "/etc/sing-box"]
 COPY ["./conf/supervisor", "/etc/supervisor"]
-
+ 
+# 授予文件权限
+RUN set -eux && \
+    mkdir -p /etc/sing-box && \
+    chmod a+x /usr/bin/docker-entrypoint.sh /usr/bin/sing-box
+ 
 # 容器信号处理
 STOPSIGNAL SIGQUIT
 

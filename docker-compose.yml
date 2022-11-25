@@ -38,6 +38,26 @@ services:
       # 共享内核
       - /lib/modules:/lib/modules:ro,cached
       - /etc/sysctl.conf:/etc/sysctl.conf:ro,cached
+    # 环境变量
+    environment:
+      # VMESS端口号
+      - VMESS_PORT=6601
+      # VMESS名称
+      - VMESS_NAME=xiaonuo
+      # VMESS UUID
+      - VMESS_UUID=f011c012-5f1d-418c-9494-d24d77a9d8f9
+      # VMESS ALTER_ID
+      - VMESS_ALTER_ID=0
+      # VMESS路径
+      - VMESS_WSPATH=/vmess
+      # TROJAN端口号
+      - TROJAN_PORT=6602
+      # TROJAN名称
+      - TROJAN_NAME=xiaonuo
+      # TROJAN密码
+      - TROJAN_PWD=@admin123
+      # TROJAN路径
+      - TROJAN_WSPATH=/trojan
     # 指定设备映射关系
     devices:
      - /dev/net/tun

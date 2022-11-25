@@ -30,6 +30,10 @@ ARG SINGBOX_VERSION=1.1-beta17
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
 ARG PKG_DEPS="\
+      bash \
+	gcc \
+	go \
+	musl-dev \
       git \
       linux-headers \
       build-base \
@@ -39,7 +43,6 @@ ARG PKG_DEPS="\
       tor \
       libevent-dev \
       tzdata \
-      go \
       ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
 
@@ -56,8 +59,9 @@ RUN set -eux && \
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
-   # 创建GOPATH目录
+   # 安装GO环境
    mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH" && \
+   export GOCACHE='/tmp/gocache' && cd /usr/local/go/src && export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

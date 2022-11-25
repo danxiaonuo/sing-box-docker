@@ -37,8 +37,8 @@ ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 ARG SINGBOX_VERSION=1.1-beta17
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
-ARG BUILD-DEPS="go"
-ENV BUILD-DEPS=$BUILD-DEPS
+ARG BUILD_DEPS="go"
+ENV BUILD_DEPS=$BUILD_DEPS
 
 ARG PKG_DEPS="\
       bash \
@@ -63,7 +63,7 @@ RUN set -eux && \
    # 更新源地址并更新系统软件
    apk update && apk upgrade && \
    # 安装依赖包
-   apk add --no-cache --virtual .$BUILD-DEPS && \
+   apk add --no-cache --virtual .$BUILD_DEPS && \
    apk add --no-cache --clean-protected $PKG_DEPS && \
    rm -rf /var/cache/apk/* && \
    # 更新时区

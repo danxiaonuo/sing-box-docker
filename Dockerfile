@@ -23,9 +23,11 @@ ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
 ARG CGO_ENABLED=1
 ENV CGO_ENABLED=$CGO_ENABLED
+ARG GOROOT=/usr/local/go
+ENV GOROOT=$GOROOT
 ARG GOPATH=/go
 ENV GOPATH=$GOPATH
-ENV PATH=$GOPATH/bin:$PATH
+ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # 源文件下载路径
 ARG DOWNLOAD_SRC=/tmp/src
@@ -66,10 +68,12 @@ RUN set -eux && \
    echo ${TZ} > /etc/timezone && \
    # 安装GO环境
    mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
-   wget --no-check-certificate https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
-    -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
-   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.linux-amd64.tar.gz -C /usr/local && \
-   chmod -R 775 "$GOROOT" && ln -sf ${GOROOT}/bin/* /usr/bin/ && \
+   wget --no-check-certificate https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz \
+    -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.src.tar.gz && \
+   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.src.tar.gz -C ${DOWNLOAD_SRC} && \
+   export GOCACHE='/tmp/gocache' && cd ${DOWNLOAD_SRC}/go/src && \
+   export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
+   export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

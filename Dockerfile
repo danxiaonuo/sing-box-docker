@@ -147,6 +147,7 @@ RUN set -eux && \
     chmod +x /usr/bin/sing-box
     
 # 拷贝文件
+COPY ["./docker-entrypoint.sh", "/usr/bin/"]
 COPY ["./conf/sing-box", "/etc/sing-box"]
 COPY ["./conf/supervisor", "/etc/supervisor"]
 

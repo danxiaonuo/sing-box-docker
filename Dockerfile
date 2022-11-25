@@ -67,7 +67,7 @@ RUN set -eux && \
    # 安装GO环境
    mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
    wget --no-check-certificate https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
-    -O ${DOWNLOAD_SRC}/go${GO_VERSION}.linux-amd64.tar.gz && \
+    -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.linux-amd64.tar.gz -C /usr/local && \
    # 克隆源码运行安装

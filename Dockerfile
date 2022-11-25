@@ -2,7 +2,8 @@
 #         构建可执行二进制文件             #
 ##########################################
 # 指定构建的基础镜像
-FROM golang:alpine AS builder
+# FROM golang:alpine AS builder
+FROM alpine:latest AS builder
 
 # 作者描述信息
 MAINTAINER danxiaonuo
@@ -20,6 +21,9 @@ ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
 ARG CGO_ENABLED=1
 ENV CGO_ENABLED=$CGO_ENABLED
+ENV PATH /usr/local/go/bin:$PATH
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:$PATH
 
 # SINGBOX版本
 ARG SINGBOX_VERSION=1.1-beta17
@@ -35,6 +39,7 @@ ARG PKG_DEPS="\
       tor \
       libevent-dev \
       tzdata \
+      go \
       ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
 
@@ -51,6 +56,8 @@ RUN set -eux && \
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
+   # 创建GOPATH目录
+   mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH" && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

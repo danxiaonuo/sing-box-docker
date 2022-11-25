@@ -71,11 +71,11 @@ RUN set -eux && \
    # 更新时间
    echo ${TZ} > /etc/timezone && \
    # 安装GO环境
-   mkdir -p "$GOROOT" "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
+   mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
    wget --no-check-certificate https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz \
     -O ${DOWNLOAD_SRC}/go${GOLANG_VERSION}.src.tar.gz && \
-   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.src.tar.gz -C ${DOWNLOAD_SRC} && \
-   export GOCACHE='/tmp/gocache' && cd ${DOWNLOAD_SRC}/go/src && \
+   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.src.tar.gz -C /usr/local && \
+   export GOCACHE='/tmp/gocache' && cd ${GOROOT}/src && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
    apk del --no-network $BUILD_DEPS && \

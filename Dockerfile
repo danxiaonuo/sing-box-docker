@@ -63,7 +63,7 @@ RUN set -eux && \
    # 更新源地址并更新系统软件
    apk update && apk upgrade && \
    # 安装依赖包
-   apk add --no-cache --virtual .$BUILD_DEPS && \
+   apk add --no-cache --clean-protected $BUILD_DEPS && \
    apk add --no-cache --clean-protected $PKG_DEPS && \
    rm -rf /var/cache/apk/* && \
    # 更新时区
@@ -78,7 +78,7 @@ RUN set -eux && \
    export GOCACHE='/tmp/gocache' && cd ${DOWNLOAD_SRC}/go/src && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
-   apk del --no-network .$build-deps && \
+   apk del --no-network $BUILD_DEPS && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

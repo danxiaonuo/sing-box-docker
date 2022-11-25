@@ -153,5 +153,5 @@ COPY ["./conf/supervisor", "/etc/supervisor"]
 # 容器信号处理
 STOPSIGNAL SIGQUIT
 
-# 运行命令
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+# ***** 入口 *****
+ENTRYPOINT ["docker-entrypoint.sh"]

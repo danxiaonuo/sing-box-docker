@@ -37,10 +37,12 @@ ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 ARG SINGBOX_VERSION=1.1-beta17
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
+ARG BUILD-DEPS="go"
+ENV BUILD-DEPS=$BUILD-DEPS
+
 ARG PKG_DEPS="\
       bash \
       gcc \
-      go \
       musl-dev \
       git \
       linux-headers \
@@ -61,7 +63,8 @@ RUN set -eux && \
    # 更新源地址并更新系统软件
    apk update && apk upgrade && \
    # 安装依赖包
-   apk add --no-cache --virtual .$PKG_DEPS && \
+   apk add --no-cache --virtual .$BUILD-DEPS && \
+   apk add --no-cache --clean-protected $PKG_DEPS && \
    rm -rf /var/cache/apk/* && \
    # 更新时区
    ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
@@ -75,7 +78,7 @@ RUN set -eux && \
    export GOCACHE='/tmp/gocache' && cd ${DOWNLOAD_SRC}/go/src && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
-   apk del --no-network .$PKG_DEPS && \
+   apk del --no-network .$build-deps && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

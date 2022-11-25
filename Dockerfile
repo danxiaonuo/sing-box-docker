@@ -68,7 +68,7 @@ RUN set -eux && \
    # 安装GO环境
    wget --no-check-certificate https://dl.google.com/go/go${GO_VERSION}.src.tar.gz \
     -O ${DOWNLOAD_SRC}/go${GO_VERSION}.src.tar.gz && \
-   mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH" && \
+   mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    cd ${DOWNLOAD_SRC} && tar xvf go${GO_VERSION}.src.tar.gz -C ${DOWNLOAD_SRC} && \
    export GOCACHE='/tmp/gocache' && cd ${DOWNLOAD_SRC}/go/src && \

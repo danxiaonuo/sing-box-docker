@@ -79,6 +79,7 @@ RUN set -eux && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
    export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH" && ./make.bash && \
    apk del --no-network $BUILD_DEPS && \
+   chmod -R 775 ${GOROOT} && ln -sf ${GOROOT}/bin/* /usr/bin/ && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

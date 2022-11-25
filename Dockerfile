@@ -15,8 +15,8 @@ ARG LANG=C.UTF-8
 ENV LANG=$LANG
 
 # GO环境变量
-ARG GO_VERSION=1.19.3
-ENV GO_VERSION=$GO_VERSION
+ARG GOLANG_VERSION=1.19.3
+ENV GOLANG_VERSION=$GOLANG_VERSION
 ARG GOPROXY=""
 ENV GOPROXY ${GOPROXY}
 ARG GO111MODULE=on
@@ -24,6 +24,7 @@ ENV GO111MODULE=$GO111MODULE
 ARG CGO_ENABLED=1
 ENV CGO_ENABLED=$CGO_ENABLED
 ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=$PATH
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:$PATH
 
@@ -66,10 +67,10 @@ RUN set -eux && \
    echo ${TZ} > /etc/timezone && \
    # 安装GO环境
    mkdir -p "$GOPATH/src" "$GOPATH/bin" "$DOWNLOAD_SRC" && chmod -R 777 "$GOPATH" && \
-   wget --no-check-certificate https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
+   wget --no-check-certificate https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     -O ${DOWNLOAD_SRC}/go${GO_VERSION}.linux-amd64.tar.gz && \
    export GOAMD64='v1' GOARCH='amd64' GOOS='linux' && \
-   cd ${DOWNLOAD_SRC} && tar xvf go${GO_VERSION}.linux-amd64.tar.gz -C /usr/local && \
+   cd ${DOWNLOAD_SRC} && tar xvf go${GOLANG_VERSION}.linux-amd64.tar.gz -C /usr/local && \
    # 克隆源码运行安装
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \

@@ -2,7 +2,7 @@
 #         构建可执行二进制文件             #
 ##########################################
 # 指定构建的基础镜像
-FROM golang:alpine AS builder
+FROM golang:1.19-alpine AS builder
 
 # 作者描述信息
 MAINTAINER danxiaonuo
@@ -20,7 +20,7 @@ ARG GOPROXY=""
 ENV GOPROXY ${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
-ARG CGO_ENABLED=1
+ARG CGO_ENABLED=0
 ENV CGO_ENABLED=$CGO_ENABLED
 
 # 源文件下载路径
@@ -65,7 +65,7 @@ RUN set -eux && \
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \
    go env -w GO111MODULE=on && \
-   go env -w CGO_ENABLED=1 && \
+   go env -w CGO_ENABLED=0 && \
    go env && \
    go mod tidy && \
    go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_gvisor,with_embedded_tor,with_lwip' \
@@ -78,7 +78,7 @@ RUN set -eux && \
 ##########################################
 # 
 # 指定创建的基础镜像
-FROM golang:alpine
+FROM alpine AS dist
 
 # 作者描述信息
 MAINTAINER danxiaonuo

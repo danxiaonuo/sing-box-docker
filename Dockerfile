@@ -2,7 +2,7 @@
 #         构建可执行二进制文件             #
 ##########################################
 # 指定构建的基础镜像
-FROM golang:1.19-alpine AS builder
+FROM golang:alpine AS builder
 
 # 作者描述信息
 MAINTAINER danxiaonuo
@@ -14,13 +14,11 @@ ARG LANG=C.UTF-8
 ENV LANG=$LANG
 
 # GO环境变量
-ARG GOLANG_VERSION=1.19.3
-ENV GOLANG_VERSION=$GOLANG_VERSION
 ARG GOPROXY=""
 ENV GOPROXY ${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
-ARG CGO_ENABLED=0
+ARG CGO_ENABLED=1
 ENV CGO_ENABLED=$CGO_ENABLED
 
 # 源文件下载路径
@@ -28,7 +26,7 @@ ARG DOWNLOAD_SRC=/tmp/src
 ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 
 # SINGBOX版本
-ARG SINGBOX_VERSION=v1.1-beta18
+ARG SINGBOX_VERSION=v1.1.1
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
 ARG PKG_DEPS="\
@@ -65,10 +63,10 @@ RUN set -eux && \
    git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && export COMMIT=$(git rev-parse --short HEAD) && \
    go env -w GO111MODULE=on && \
-   go env -w CGO_ENABLED=0 && \
+   go env -w CGO_ENABLED=1 && \
    go env && \
    go mod tidy && \
-   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_gvisor,with_embedded_tor,with_lwip' \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor' \
         -o /go/bin/sing-box \
         -ldflags "-X github.com/sagernet/sing-box/constant.Commit=${COMMIT} -w -s -buildid=" \
         ./cmd/sing-box

@@ -66,7 +66,7 @@ RUN set -eux && \
    go env -w CGO_ENABLED=1 && \
    go env && \
    go mod tidy && \
-   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_shadowsocksr,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor' \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor' \
         -o /go/bin/sing-box \
         -ldflags "-X github.com/sagernet/sing-box/constant.Commit=${COMMIT} -w -s -buildid=" \
         ./cmd/sing-box

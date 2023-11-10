@@ -40,7 +40,6 @@ ARG PKG_DEPS="\
       zlib-dev \
       openssl \
       openssl-dev \
-      tor \
       libevent-dev \
       tzdata \
       ca-certificates"
@@ -97,7 +96,6 @@ ARG PKG_DEPS="\
       zlib-dev \
       openssl \
       openssl-dev \
-      tor \
       libevent-dev \
       bind-tools \
       iproute2 \

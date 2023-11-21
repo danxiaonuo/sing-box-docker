@@ -1,0 +1,26 @@
+{
+    "log":{
+        "level":"info"
+    },
+    "inbounds":[
+        {
+            "type":"hysteria2",
+            "listen":"::",
+            "listen_port":6603,
+            "up_mbps":100,
+            "down_mbps":100,
+            "users":[
+                {
+                    "name":"xiaonuo",
+                    "password":"@admin123"
+                }
+            ]
+        }
+    ],
+    "outbounds":[
+        {
+            "type":"direct",
+            "tag":"direct"
+        }
+    ]
+}

@@ -135,7 +135,7 @@ RUN set -eux && \
 ##########################################
 # 
 
-FROM builder
+FROM ubuntu:jammy
 
 # 作者描述信息
 MAINTAINER danxiaonuo
@@ -196,6 +196,7 @@ ARG PKG_DEPS="\
     fonts-wqy-microhei \
     fonts-arphic-ukai \
     fonts-arphic-uming \
+    supervisor \
     ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
 

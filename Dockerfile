@@ -80,6 +80,7 @@ ARG PKG_DEPS="\
     libmecab2 \
     debsums \
     locales \
+    build-essential \
     ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
 

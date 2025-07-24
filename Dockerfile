@@ -16,7 +16,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV DEBIAN_FRONTEND=$DEBIAN_FRONTEND
 
 # GO环境变量
-ARG GO_VERSION=1.24.2
+ARG GO_VERSION=1.24.5
 ENV GO_VERSION=$GO_VERSION
 ARG GOROOT=/opt/go
 ENV GOROOT=$GOROOT
@@ -38,7 +38,7 @@ ARG DOWNLOAD_SRC=/tmp/src
 ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 
 # SINGBOX版本
-ARG SINGBOX_VERSION=v1.11.8
+ARG SINGBOX_VERSION=v1.11.15
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
 # 安装依赖包
@@ -124,7 +124,7 @@ RUN set -eux && \
    go env -w CGO_ENABLED=1 && \
    go env && \
    go mod tidy && \
-   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor' \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale' \
         -o /go/bin/sing-box \
         -ldflags "-X github.com/sagernet/sing-box/constant.Commit=${COMMIT} -w -s -buildid=" \
         ./cmd/sing-box

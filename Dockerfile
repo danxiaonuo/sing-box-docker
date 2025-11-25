@@ -81,6 +81,9 @@ ARG PKG_DEPS="\
     debsums \
     locales \
     build-essential \
+    pkg-config \
+    linux-headers-amd64 \
+    cmake \
     ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
 

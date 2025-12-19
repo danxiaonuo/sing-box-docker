@@ -16,12 +16,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV DEBIAN_FRONTEND=$DEBIAN_FRONTEND
 
 # GO环境变量
-ARG GO_VERSION=1.25.4
+ARG GO_VERSION=1.23.4
 ENV GO_VERSION=$GO_VERSION
 ARG GOROOT=/opt/go
 ENV GOROOT=$GOROOT
 ARG GOPATH=/opt/golang
 ENV GOPATH=$GOPATH
+ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # ***** 设置变量 *****
 
@@ -113,18 +114,18 @@ RUN --mount=type=cache,target=/var/lib/apt/,sharing=locked \
 RUN set -eux && \
     wget --no-check-certificate https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O /tmp/go${GO_VERSION}.linux-amd64.tar.gz && \
     cd /tmp/ && tar zxvf go${GO_VERSION}.linux-amd64.tar.gz -C /opt && \
-    export GOROOT=/opt/go && \
-    export GOPATH=/opt/golang && \
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin && \
-    mkdir -pv $GOPATH/bin && \
-    ln -sfd /opt/go/bin/* /usr/bin/
+    mkdir -pv $GOPATH/bin $GOPATH/src $GOPATH/pkg && \
+    ln -sf /opt/go/bin/go /usr/bin/go && \
+    ln -sf /opt/go/bin/gofmt /usr/bin/gofmt && \
+    go version
 
 
 # ***** 安装依赖并构建二进制文件 *****
 RUN --mount=type=cache,target=/root/.cache/go-build \
    --mount=type=cache,target=/opt/golang/pkg/mod \
    set -eux && \
-   export PATH=$PATH:$GOROOT/bin:$GOPATH/bin && \
+   go version && \
+   go env && \
    # 克隆源码运行安装
    git clone -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && \
@@ -132,13 +133,15 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
    export VERSION=$(go run ./cmd/internal/read_tag) && \
    go env -w GO111MODULE=on && \
    go env -w CGO_ENABLED=0 && \
-   go env && \
+   go env -w GOPROXY=${GOPROXY:-https://proxy.golang.org,direct} && \
+   go mod download && \
    go mod tidy && \
    mkdir -p /go/bin && \
    go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' \
         -o /go/bin/sing-box \
         -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid= -checklinkname=0" \
-        ./cmd/sing-box
+        ./cmd/sing-box && \
+   ls -lh /go/bin/sing-box
 
 
 ##########################################

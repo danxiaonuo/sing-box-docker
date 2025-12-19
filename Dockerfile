@@ -26,19 +26,22 @@ ENV GOPATH=$GOPATH
 # ***** 设置变量 *****
 
 # GO环境变量
+ARG TARGETOS TARGETARCH
 ARG GOPROXY=""
 ENV GOPROXY ${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
-ARG CGO_ENABLED=1
+ARG CGO_ENABLED=0
 ENV CGO_ENABLED=$CGO_ENABLED
+ENV GOOS=$TARGETOS
+ENV GOARCH=$TARGETARCH
 
 # 源文件下载路径
 ARG DOWNLOAD_SRC=/tmp/src
 ENV DOWNLOAD_SRC=$DOWNLOAD_SRC
 
 # SINGBOX版本
-ARG SINGBOX_VERSION=v1.12.12
+ARG SINGBOX_VERSION=v1.12.13
 ENV SINGBOX_VERSION=$SINGBOX_VERSION
 
 # 安装依赖包
@@ -82,7 +85,6 @@ ARG PKG_DEPS="\
     locales \
     build-essential \
     pkg-config \
-    linux-headers-amd64 \
     cmake \
     ca-certificates"
 ENV PKG_DEPS=$PKG_DEPS
@@ -121,17 +123,17 @@ RUN set -eux && \
 # ***** 安装依赖并构建二进制文件 *****
 RUN set -eux && \
    # 克隆源码运行安装
-   git clone --depth=1 -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
+   git clone -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && \
    export COMMIT=$(git rev-parse --short HEAD) && \
    export VERSION=$(go run ./cmd/internal/read_tag) && \
    go env -w GO111MODULE=on && \
-   go env -w CGO_ENABLED=1 && \
+   go env -w CGO_ENABLED=0 && \
    go env && \
    go mod tidy && \
-   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale' \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' \
         -o /go/bin/sing-box \
-        -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid=" \
+        -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid= -checklinkname=0" \
         ./cmd/sing-box
 		
 

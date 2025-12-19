@@ -16,7 +16,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV DEBIAN_FRONTEND=$DEBIAN_FRONTEND
 
 # GO环境变量
-ARG GO_VERSION=1.23.4
+ARG GO_VERSION=1.25.5
 ENV GO_VERSION=$GO_VERSION
 ARG GOROOT=/opt/go
 ENV GOROOT=$GOROOT
@@ -28,8 +28,6 @@ ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 # GO环境变量
 ARG TARGETOS TARGETARCH
-ARG GOPROXY=""
-ENV GOPROXY=${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
 ARG CGO_ENABLED=0
@@ -133,15 +131,16 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
    export VERSION=$(go run ./cmd/internal/read_tag) && \
    go env -w GO111MODULE=on && \
    go env -w CGO_ENABLED=0 && \
-   go env -w GOPROXY=${GOPROXY:-https://proxy.golang.org,direct} && \
    go mod download && \
    go mod tidy && \
    mkdir -p /go/bin && \
+   export GOMAXPROCS=2 && \
    go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' \
         -o /go/bin/sing-box \
         -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid= -checklinkname=0" \
-        ./cmd/sing-box && \
-   ls -lh /go/bin/sing-box
+        ./cmd/sing-box || (echo "Build failed, checking for errors..." && go build -x -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' -o /go/bin/sing-box ./cmd/sing-box 2>&1 | tail -50 && exit 1) && \
+   ls -lh /go/bin/sing-box && \
+   file /go/bin/sing-box
 
 
 ##########################################

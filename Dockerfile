@@ -3,7 +3,7 @@
 #############################
 FROM --platform=$BUILDPLATFORM ubuntu:jammy AS builder
 # 作者描述信息
-MAINTAINER danxiaonuo
+LABEL maintainer="danxiaonuo"
 # 时区设置
 ARG TZ=Asia/Shanghai
 ENV TZ=$TZ
@@ -28,7 +28,7 @@ ENV GOPATH=$GOPATH
 # GO环境变量
 ARG TARGETOS TARGETARCH
 ARG GOPROXY=""
-ENV GOPROXY ${GOPROXY}
+ENV GOPROXY=${GOPROXY}
 ARG GO111MODULE=on
 ENV GO111MODULE=$GO111MODULE
 ARG CGO_ENABLED=0
@@ -118,10 +118,13 @@ RUN set -eux && \
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin && \
     mkdir -pv $GOPATH/bin && \
     ln -sfd /opt/go/bin/* /usr/bin/
-	
+
 
 # ***** 安装依赖并构建二进制文件 *****
-RUN set -eux && \
+RUN --mount=type=cache,target=/root/.cache/go-build \
+   --mount=type=cache,target=/opt/golang/pkg/mod \
+   set -eux && \
+   export PATH=$PATH:$GOROOT/bin:$GOPATH/bin && \
    # 克隆源码运行安装
    git clone -b $SINGBOX_VERSION --progress https://github.com/SagerNet/sing-box.git /src && \
    cd /src && \
@@ -131,21 +134,22 @@ RUN set -eux && \
    go env -w CGO_ENABLED=0 && \
    go env && \
    go mod tidy && \
+   mkdir -p /go/bin && \
    go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' \
         -o /go/bin/sing-box \
         -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid= -checklinkname=0" \
         ./cmd/sing-box
-		
+
 
 ##########################################
 #         构建基础镜像                    #
 ##########################################
-# 
+#
 
 FROM ubuntu:jammy
 
 # 作者描述信息
-MAINTAINER danxiaonuo
+LABEL maintainer="danxiaonuo"
 # 时区设置
 ARG TZ=Asia/Shanghai
 ENV TZ=$TZ
@@ -233,7 +237,7 @@ RUN --mount=type=cache,target=/var/lib/apt/,sharing=locked \
    sed -i -e 's/mouse=/mouse-=/g' /usr/share/vim/vim*/defaults.vim && \
    locale-gen zh_CN.UTF-8 && localedef -f UTF-8 -i zh_CN zh_CN.UTF-8 && locale-gen && \
    /bin/zsh
-   
+
 # 拷贝sing-box
 COPY --from=builder /go/bin/sing-box /usr/bin/sing-box
 
@@ -241,12 +245,12 @@ COPY --from=builder /go/bin/sing-box /usr/bin/sing-box
 COPY ["./docker-entrypoint.sh", "/usr/bin/"]
 COPY ["./conf/sing-box", "/etc/sing-box"]
 COPY ["./conf/supervisor", "/etc/supervisor"]
- 
+
 # 授予文件权限
 RUN set -eux && \
     mkdir -p /etc/sing-box && \
     chmod a+x /usr/bin/docker-entrypoint.sh /usr/bin/sing-box
- 
+
 # 容器信号处理
 STOPSIGNAL SIGQUIT
 

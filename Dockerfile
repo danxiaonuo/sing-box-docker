@@ -134,7 +134,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
    go mod download && \
    go mod tidy && \
    mkdir -p /go/bin && \
-   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,badlinkname,tfogo_checklinkname0' \
+   go build -v -trimpath -tags 'with_quic,with_grpc,with_wireguard,with_reality_server,with_dhcp,with_ech,with_utls,with_acme,with_clash_api,with_v2ray_api,with_gvisor,with_tailscale,with_ccm,with_ocm,with_purego,badlinkname,tfogo_checklinkname0' \
         -o /go/bin/sing-box \
         -ldflags "-X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -s -w -buildid= -checklinkname=0" \
         ./cmd/sing-box && \

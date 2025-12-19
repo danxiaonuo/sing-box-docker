@@ -138,9 +138,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
         -o /go/bin/sing-box \
         -ldflags "-s -buildid= -X \"github.com/sagernet/sing-box/constant.Version=$VERSION\" -checklinkname=0" \
         ./cmd/sing-box && \
-   ls -lh /go/bin/sing-box && \
-   file /go/bin/sing-box && \
-   test -f /go/bin/sing-box
+   ls -lh /go/bin/sing-box
 
 
 ##########################################

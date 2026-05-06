@@ -21,6 +21,7 @@ cat <<-EOF > /etc/sing-box/vmess.json
             "listen_port":${VMESS_PORT},
             "tcp_fast_open":true,
             "udp_fragment":true,
+            "udp_timeout":300,
             "disable_tcp_keep_alive": false,
             "users":[
                 {
@@ -59,6 +60,7 @@ cat <<-EOF > /etc/sing-box/trojan.json
             "listen_port":${TROJAN_PORT},
             "tcp_fast_open":true,
             "udp_fragment":true,
+            "udp_timeout":300,
             "disable_tcp_keep_alive": false,
             "users":[
                 {

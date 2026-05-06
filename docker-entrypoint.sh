@@ -21,10 +21,7 @@ cat <<-EOF > /etc/sing-box/vmess.json
             "listen_port":${VMESS_PORT},
             "tcp_fast_open":true,
             "udp_fragment":true,
-            "sniff":true,
-            "sniff_override_destination":true,
-            "proxy_protocol":false,
-            "proxy_protocol_accept_no_header":false,
+            "disable_tcp_keep_alive": false,
             "users":[
                 {
                     "name":"${VMESS_NAME}",
@@ -62,11 +59,7 @@ cat <<-EOF > /etc/sing-box/trojan.json
             "listen_port":${TROJAN_PORT},
             "tcp_fast_open":true,
             "udp_fragment":true,
-            "sniff":true,
-            "sniff_override_destination":true,
-            "udp_timeout":300,
-            "proxy_protocol":false,
-            "proxy_protocol_accept_no_header":false,
+            "disable_tcp_keep_alive": false,
             "users":[
                 {
                     "name":"${TROJAN_NAME}",

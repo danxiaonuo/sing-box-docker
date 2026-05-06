@@ -10,6 +10,7 @@
             "listen_port":6601,
             "tcp_fast_open":true,
             "udp_fragment":true,
+            "udp_timeout":300,
             "disable_tcp_keep_alive": false,
             "users":[
                 {
